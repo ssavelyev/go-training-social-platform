@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"time"
 	"training-platform/internal/db"
 	"training-platform/internal/env"
 	"training-platform/internal/store"
@@ -24,6 +25,7 @@ func main() {
 			maxIdleTime:  env.GetString("DB_MAX_IDLE_TIME", "15m"),
 		},
 		env: env.GetString("ENV", "development"),
+		exp: time.Hour * 24 * 3,
 	}
 
 	db, err := db.New(

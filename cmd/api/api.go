@@ -19,6 +19,7 @@ type config struct {
 	addr string
 	db   dbConfig
 	env  string
+	exp  time.Duration
 }
 
 type dbConfig struct {
@@ -50,6 +51,10 @@ func (app *application) mount() http.Handler {
 				r.Delete("/", app.deletePostHandler)
 				r.Patch("/", app.updatePostHandler)
 			})
+		})
+
+		r.Route("/auth", func(r chi.Router) {
+			r.Post("/user", app.registerUserHandler)
 		})
 
 		r.Route("/users", func(r chi.Router) {
