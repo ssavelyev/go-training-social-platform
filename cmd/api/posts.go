@@ -39,7 +39,7 @@ func (app *application) createPostHandler(w http.ResponseWriter, r *http.Request
 	}
 
 	//Change after
-	userId := 1
+	userId := 2
 
 	post := &store.Post{
 		Title:   payload.Title,
