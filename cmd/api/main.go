@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 	"time"
+	"training-platform/internal/auth"
 	"training-platform/internal/db"
 	"training-platform/internal/env"
 	"training-platform/internal/store"
@@ -26,6 +27,13 @@ func main() {
 		},
 		env: env.GetString("ENV", "development"),
 		exp: time.Hour * 24 * 3,
+		auth: authConfig{
+			token: tokenConfig{
+				secret: env.GetString("AUTH_TOKEN_SECRET", "example"),
+				exp:    time.Hour * 24 * 7,
+				iss:    env.GetString("AUTH_TOKEN_ISSUER", "trainingPlatform"),
+			},
+		},
 	}
 
 	db, err := db.New(
@@ -44,9 +52,16 @@ func main() {
 
 	store := store.NewStorage(db)
 
+	jwtAuthenticator := auth.NewJWTAuthenticator(
+		cfg.auth.token.secret,
+		cfg.auth.token.iss,
+		cfg.auth.token.iss,
+	)
+
 	app := &application{
-		config: cfg,
-		store:  store,
+		config:        cfg,
+		store:         store,
+		authenticator: jwtAuthenticator,
 	}
 
 	mux := app.mount()

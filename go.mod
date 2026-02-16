@@ -2,6 +2,8 @@ module training-platform
 
 go 1.25
 
+require github.com/golang-jwt/jwt/v5 v5.3.1
+
 require (
 	dario.cat/mergo v1.0.2 // indirect
 	github.com/air-verse/air v1.64.4 // indirect

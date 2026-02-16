@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"training-platform/internal/auth"
 	"training-platform/internal/store"
 
 	"github.com/go-chi/chi/v5"
@@ -11,8 +12,9 @@ import (
 )
 
 type application struct {
-	config config
-	store  store.Storage
+	config        config
+	store         store.Storage
+	authenticator auth.Authenticator
 }
 
 type config struct {
@@ -20,6 +22,17 @@ type config struct {
 	db   dbConfig
 	env  string
 	exp  time.Duration
+	auth authConfig
+}
+
+type authConfig struct {
+	token tokenConfig
+}
+
+type tokenConfig struct {
+	secret string
+	exp    time.Duration
+	iss    string
 }
 
 type dbConfig struct {
@@ -55,6 +68,7 @@ func (app *application) mount() http.Handler {
 
 		r.Route("/auth", func(r chi.Router) {
 			r.Post("/user", app.registerUserHandler)
+			r.Post("/token", app.createTokenHandler)
 		})
 
 		r.Route("/users", func(r chi.Router) {
