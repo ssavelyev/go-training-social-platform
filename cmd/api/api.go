@@ -63,8 +63,8 @@ func (app *application) mount() http.Handler {
 				r.Use(app.postsContextMiddleware)
 
 				r.Get("/", app.getPostHandler)
-				r.Delete("/", app.deletePostHandler)
-				r.Patch("/", app.updatePostHandler)
+				r.Delete("/", app.checkPostOwnership("admin", app.deletePostHandler))
+				r.Patch("/", app.checkPostOwnership("moderator", app.updatePostHandler))
 			})
 		})
 
@@ -78,7 +78,6 @@ func (app *application) mount() http.Handler {
 
 			r.Route("/{userID}", func(r chi.Router) {
 				r.Use(app.AuthTokenMiddleware)
-				// r.Use(app.userContextMiddleware)
 
 				r.Get("/", app.getUserHandler)
 			})

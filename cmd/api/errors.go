@@ -28,3 +28,9 @@ func (app *application) unauthorizedErrorResponse(w http.ResponseWriter, r *http
 
 	writeJSONError(w, http.StatusNotFound, "unauthorized")
 }
+
+func (app *application) forbiddenResponse(w http.ResponseWriter, r *http.Request) {
+	log.Printf("Forbidden response error: %s path: %s", r.Method, r.URL.Path)
+
+	writeJSONError(w, http.StatusForbidden, "Forbidden response")
+}

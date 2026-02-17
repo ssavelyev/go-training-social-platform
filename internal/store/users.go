@@ -17,6 +17,8 @@ type User struct {
 	Password  password `json:"-"`
 	CreatedAt string   `json:"created_at"`
 	IsActive  bool     `json:"is_active"`
+	Role      Role     `json:"role"`
+	RoleID    int64    `json:"role_id"`
 }
 
 type password struct {
@@ -42,8 +44,8 @@ type UsersStore struct {
 
 func (s *UsersStore) create(ctx context.Context, tx *sql.Tx, user *User) error {
 	query := `
-		INSERT INTO users (username, password, email)
-		VALUES ($1, $2, $3) 
+		INSERT INTO users (username, password, email, role_id)
+		VALUES ($1, $2, $3, $4) 
 		RETURNING id, created_at
 	`
 
@@ -56,6 +58,7 @@ func (s *UsersStore) create(ctx context.Context, tx *sql.Tx, user *User) error {
 		user.Username,
 		user.Password.hash,
 		user.Email,
+		user.RoleID,
 	).Scan(
 		&user.ID,
 		&user.CreatedAt,
@@ -70,9 +73,10 @@ func (s *UsersStore) create(ctx context.Context, tx *sql.Tx, user *User) error {
 
 func (s *UsersStore) GetById(ctx context.Context, id int64) (*User, error) {
 	query := `
-		SELECT id, username, email, password, created_at
-		FROM users
-		WHERE id = $1 AND is_active = true
+		SELECT u.id, u.username, u.email, u.password, u.created_at, r.*
+		FROM users u
+		JOIN roles r ON (u.role_id = r.id)
+		WHERE u.id = $1 AND u.is_active = true
 	`
 
 	ctx, cancel := context.WithTimeout(ctx, QueryTimeoutDuration)
@@ -85,6 +89,9 @@ func (s *UsersStore) GetById(ctx context.Context, id int64) (*User, error) {
 		&user.Email,
 		&user.Password.hash,
 		&user.CreatedAt,
+		&user.Role.ID,
+		&user.Role.Name,
+		&user.Role.Level,
 	)
 
 	if err != nil {

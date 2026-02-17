@@ -15,6 +15,7 @@ type RegisterUserPayload struct {
 	Username string `json:"username" validate:"required,max=100"`
 	Email    string `json:"email" validate:"required,email,max=100"`
 	Password string `json:"password" validate:"required,min=5,max=20"`
+	RoleID   int    `json:"role_id"`
 }
 
 type CreateUserTokenPayload struct {
@@ -43,6 +44,7 @@ func (app *application) registerUserHandler(w http.ResponseWriter, r *http.Reque
 	user := &store.User{
 		Username: payload.Username,
 		Email:    payload.Email,
+		RoleID:   int64(payload.RoleID),
 	}
 
 	if err := user.Password.Set(payload.Password); err != nil {

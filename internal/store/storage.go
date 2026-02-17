@@ -28,6 +28,9 @@ type Storage struct {
 	Comments interface {
 		GetByPostId(context.Context, int64) (*[]Comment, error)
 	}
+	Roles interface {
+		GetByName(context.Context, string) (*Role, error)
+	}
 }
 
 func NewStorage(db *sql.DB) Storage {
@@ -35,6 +38,7 @@ func NewStorage(db *sql.DB) Storage {
 		Posts:    &PostsStore{db},
 		Users:    &UsersStore{db},
 		Comments: &CommentsStore{db},
+		Roles:    &RoleStore{db},
 	}
 }
 
