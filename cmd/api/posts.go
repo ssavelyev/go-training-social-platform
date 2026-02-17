@@ -38,13 +38,12 @@ func (app *application) createPostHandler(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	//Change after
-	userId := 2
+	user := getUserFromCtx(r)
 
 	post := &store.Post{
 		Title:   payload.Title,
 		Content: payload.Content,
-		UserID:  int64(userId),
+		UserID:  user.ID,
 		Tags:    payload.Tags,
 	}
 
