@@ -6,6 +6,7 @@ import (
 	"time"
 	"training-platform/internal/auth"
 	"training-platform/internal/store"
+	"training-platform/internal/store/cache"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -14,15 +15,24 @@ import (
 type application struct {
 	config        config
 	store         store.Storage
+	cacheStorage  cache.Storage
 	authenticator auth.Authenticator
 }
 
 type config struct {
-	addr string
-	db   dbConfig
-	env  string
-	exp  time.Duration
-	auth authConfig
+	addr     string
+	db       dbConfig
+	env      string
+	exp      time.Duration
+	auth     authConfig
+	redisCfg redisConfig
+}
+
+type redisConfig struct {
+	addr    string
+	pw      string
+	db      int
+	enabled bool
 }
 
 type authConfig struct {
