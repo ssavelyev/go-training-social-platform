@@ -2,7 +2,7 @@ services:
   db:
     image: postgres:latest
     container_name: social
-    restart: always
+    restart: unless-stopped
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: adminpassword
@@ -11,6 +11,14 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql
+
+  redis:
+    image: redis:latest
+    container_name: social_cache
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    command: redis-server --save 60 1 --loglevel warning
 
 volumes:
   postgres_data:
